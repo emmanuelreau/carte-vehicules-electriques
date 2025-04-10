@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte des bornes de recharge</title>
+
+    <!-- Inclure la bibliothèque Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <!-- Inclure la bibliothèque Leaflet MarkerCluster CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
+
+    <style>
+        #map {
+            height: 500px;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Carte des bornes de recharge</h1>
+
+    <!-- Div pour afficher la carte -->
+    <div id="map"></div>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+    <script>
+        // Créer la carte centrée sur un emplacement initial (par exemple, Paris)
+        var map = L.map('map').setView([48.8566, 2.3522], 13); // Coordonnées de Paris
+
+
+        // Ajouter le fond de carte OpenStreetMap
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+            lang: 'fr'
+        }).addTo(map);
+
+        // Créer un groupe pour les clusters de marqueurs
+        var markers = L.markerClusterGroup();
+
+        // Charger le fichier GeoJSON (cartejson.geojson)
+        fetch('cartejson.geojson')
+            .then(response => response.json())
+            .then(data => {
+                // Ajouter les points GeoJSON à la carte avec le clustering
+                L.geoJSON(data, {
+                    onEachFeature: function (feature, layer) {
+                        // Ajouter chaque point au groupe de marqueurs
+                        markers.addLayer(layer);
+                    }
+                });
+
+                // Ajouter le groupe de clusters à la carte
+                map.addLayer(markers);
+            })
+            .catch(error => {
+                console.error('Erreur lors du chargement du fichier GeoJSON:', error);
+            });
+    </script>
+</body>
+</html>
